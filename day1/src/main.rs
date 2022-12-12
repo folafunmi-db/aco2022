@@ -1,27 +1,21 @@
-fn main() {
-    let input = read_input().unwrap();
-    println!("{input}");
-}
+fn main() -> color_eyre::Result<()> {
+    color_eyre::install()?;
 
-struct PathedIoError {
-    path: String,
-    inner: std::io::Error,
-}
+    let input = include_str!("input.txt");
+    let mut largest = 0;
 
-impl std::fmt::Debug for PathedIoError {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        write!(f, "for file {:?}: {}", self.path, self.inner)
+    for group in input.replace("\r\n", "\n").split("\n\n") {
+        let mut sum = 0;
+        for line in group.lines() {
+            let value = line.parse::<u64>()?;
+            sum += value;
+        }
+
+        if sum > largest {
+            largest = sum;
+        }
     }
-}
+    println!("Largeset group has sum: {largest}");
 
-fn read_input() -> Result<String, PathedIoError> {
-    let path = "src/input.txt";
-
-    match std::fs::read_to_string(path) {
-        Ok(s) => Ok(s),
-        Err(e) => Err(PathedIoError {
-            path: path.into(),
-            inner: e,
-        }),
-    }
+    Ok(())
 }
